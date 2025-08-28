@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS setup (live + local)
+// ✅ CORS setup (allow your domains)
 app.use(cors({
   origin: ["https://irraspaces.com", "http://localhost:3000"]
 }));
@@ -18,32 +18,28 @@ app.get('/', (req, res) => {
 
 // ✅ Contact route
 app.post('/contact', async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, phone, message } = req.body;
 
-  if (!name || !email || !message) {
+  if (!name || !email || !phone || !message) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  console.log('📩 Contact form received:', name, email, message);
-
   try {
-    // --- Setup email transporter for cPanel SMTP ---
     const transporter = nodemailer.createTransport({
-      host: "mail.valourtechnologies.com",  // ✅ cPanel mail server
-      port: 465,                    // or 587 if 465 doesn’t work
-      secure: true,                 // true for port 465, false for 587
+      host: process.env.SMTP_HOST,   // from .env
+      port: process.env.SMTP_PORT,   // from .env
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER, 
         pass: process.env.EMAIL_PASS
       }
     });
 
-    // --- Email options ---
     const mailOptions = {
       from: `"Irra Spaces" <${process.env.EMAIL_USER}>`,
       to: process.env.RECEIVER_EMAIL, 
       subject: `New Contact from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`,
       replyTo: email
     };
 
@@ -58,6 +54,4 @@ app.post('/contact', async (req, res) => {
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server started on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
