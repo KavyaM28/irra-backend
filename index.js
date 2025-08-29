@@ -10,7 +10,7 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "https://irra-frontend.onrender.com",
-    "https://kavyam28.github.io"  // your GitHub Pages URL if deployed
+    "https://kavyam28.github.io"  // your GitHub Pages URL
   ]
 }));
 app.use(express.json());
@@ -32,12 +32,12 @@ app.post('/contact', async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.office365.com",
-      port: process.env.SMTP_PORT || 587,
-      secure: false, // keep false for port 587
+      host: process.env.SMTP_HOST || "smtpout.secureserver.net", // GoDaddy SMTP
+      port: process.env.SMTP_PORT || 465,
+      secure: true, // true for port 465
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER, // hello@irraspaces.com
+        pass: process.env.EMAIL_PASS  // password from GoDaddy
       }
     });
 
