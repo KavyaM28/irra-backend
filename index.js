@@ -6,24 +6,30 @@ require('dotenv').config();
 const app = express();
 
 // ✅ CORS setup (allow your domains)
-app.use(cors({
+const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://irra-frontend.onrender.com",
     "https://kavyam28.github.io",     // GitHub Pages
   ],
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
-}));
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Handle preflight (OPTIONS) requests
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 
 // ✅ Root route
-app.get('/', (req, res) => {
-  res.send('Backend is running!');
+app.get('/api', (req, res) => {
+  res.send('Backend is running with /api prefix!');
 });
 
 // ✅ Contact route
-app.post('/contact', async (req, res) => {
+app.post('/api/contact', async (req, res) => {
   const { name, email, phone, message } = req.body;
 
   if (!name || !email || !phone || !message) {
@@ -36,14 +42,14 @@ app.post('/contact', async (req, res) => {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || "smtpout.secureserver.net", // GoDaddy SMTP
       port: process.env.SMTP_PORT || 465,
-      secure: true, // true for port 465
+      secure: true,
       auth: {
-        user: process.env.EMAIL_USER, // hello@irraspaces.com
-        pass: process.env.EMAIL_PASS  // password from GoDaddy
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
 
-    // 1️⃣ Send email to Admin (you)
+    // 1️⃣ Email to Admin
     await transporter.sendMail({
       from: `"Irra Spaces" <${process.env.EMAIL_USER}>`,
       to: process.env.RECEIVER_EMAIL,
@@ -52,10 +58,10 @@ app.post('/contact', async (req, res) => {
       replyTo: email
     });
 
-    // 2️⃣ Send confirmation to Client (the person who filled form)
+    // 2️⃣ Confirmation to Client
     await transporter.sendMail({
       from: `"Irra Spaces" <${process.env.EMAIL_USER}>`,
-      to: email, // send to client
+      to: email,
       subject: "Thank you for contacting Irra Spaces!",
       text: `Hello ${name},\n\nThank you for reaching out to Irra Spaces. We have received your message:\n\n"${message}"\n\nOur team will get back to you shortly.\n\nBest regards,\nIrra Spaces Team`
     });
