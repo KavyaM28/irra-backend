@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
@@ -12,16 +11,24 @@ const allowedOrigins = [
   "https://irra-frontend.onrender.com",
   "https://kavyam28.github.io"
 ];
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 app.use(express.json()); // parse JSON requests
 
 // ✅ Test route
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("🚀 Backend is running!");
 });
 
-// ✅ Contact route
-app.post("/contact", async (req, res) => {
+// ✅ Contact route (use /contact instead of /api/contact if you want simplicity)
+app.post("/api/contact", async (req, res) => {
   const { name, email, phone, message } = req.body;
 
   if (!name || !email || !phone || !message) {
@@ -68,3 +75,4 @@ app.post("/contact", async (req, res) => {
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
+// To run: set environment variables in .env file and use `node index.js`
