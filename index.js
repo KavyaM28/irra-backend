@@ -1,3 +1,4 @@
+// index.js
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
@@ -5,19 +6,17 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS setup (allow your domains)
+// ✅ CORS setup (allow your frontend domains)
 const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://irra-frontend.onrender.com",
-    "https://kavyam28.github.io", // GitHub Pages
+    "https://kavyam28.github.io" // GitHub Pages
   ],
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
-
-// ✅ Handle preflight (OPTIONS) requests
 app.options("*", cors(corsOptions));
 
 // ✅ Middleware
@@ -33,7 +32,7 @@ app.post("/api/contact", async (req, res) => {
   const { name, email, phone, message } = req.body;
 
   if (!name || !email || !phone || !message) {
-    return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ success: false, error: "All fields are required" });
   }
 
   console.log("📩 Contact form received:", name, email, phone, message);
@@ -66,12 +65,10 @@ app.post("/api/contact", async (req, res) => {
       text: `Hello ${name},\n\nThank you for reaching out to Irra Spaces. We have received your message:\n\n"${message}"\n\nOur team will get back to you shortly.\n\nBest regards,\nIrra Spaces Team`,
     });
 
-    res.json({
-      message: "✅ Thank you for contacting us! We'll get back soon.",
-    });
+    res.json({ success: true, message: "✅ Thank you for contacting us! We'll get back soon." });
   } catch (error) {
     console.error("❌ Email send error:", error);
-    res.status(500).json({ error: "Message could not be sent. Try again later." });
+    res.status(500).json({ success: false, error: "Message could not be sent. Try again later." });
   }
 });
 
