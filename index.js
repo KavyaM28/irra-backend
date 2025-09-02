@@ -72,7 +72,7 @@ app.post("/api/contact", async (req, res) => {
       from: `"Irra Spaces" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Thank you for contacting Irra Spaces!",
-      text: `Hello ${name},\n\nWe received your message:\n"${message}"\n\nOur team will respond shortly.\n\n- Irra Spaces`,
+      text: `Hello ${name},\n\n Thank you for reaching out to Irra Spaces. We have received your message:\n"${message}"\n\nOur team will get back to you shortly.\n\nBest regards,\nIrra Spaces`,
     });
 
     res.json({ success: true, message: "✅ Message sent successfully." });
