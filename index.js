@@ -8,8 +8,8 @@ const app = express();
 // ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://irra-frontend.onrender.com",
-  "https://kavyam28.github.io"
+  "https://irraspaces.com",     // ✅ your custom frontend
+  "https://www.irraspaces.com"
 ];
 
 app.use(
